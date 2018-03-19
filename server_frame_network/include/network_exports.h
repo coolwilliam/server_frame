@@ -6,13 +6,13 @@
 #define SERVER_FRAME_NETWORK_API
 #else
 #define SERVER_FRAME_NETWORK_API (extern "C")
-#endif //__cplusplus
+#endif  // __cplusplus
 #else
 #ifdef __cplusplus
 #define SERVER_FRAME_NETWORK_API
 #else
 #define SERVER_FRAME_NETWORK_API (extern "C")
-#endif //__cplusplus
-#endif //SERVER_FRAME_NETWORK_EXPORTS
+#endif  // __cplusplus
+#endif  // SERVER_FRAME_NETWORK_EXPORTS
 
-#endif // network_export_h__
+#endif  // network_export_h__

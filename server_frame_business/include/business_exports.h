@@ -6,13 +6,13 @@
 #define SERVER_FRAME_BUSINESS_API
 #else
 #define SERVER_FRAME_BUSINESS_API (extern "C")
-#endif //__cplusplus
+#endif  // __cplusplus
 #else
 #ifdef __cplusplus
 #define SERVER_FRAME_BUSINESS_API
 #else
 #define SERVER_FRAME_BUSINESS_API (extern "C")
-#endif //__cplusplus
-#endif //SERVER_FRAME_BUSINESS_EXPORTS
+#endif  // __cplusplus
+#endif  // SERVER_FRAME_BUSINESS_EXPORTS
 
-#endif // business_exports_h__
+#endif  // business_exports_h__

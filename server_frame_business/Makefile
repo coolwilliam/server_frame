@@ -2,7 +2,8 @@ CPATH=$(shell pwd)
 
 ### include path
 DIR_INC =-I$(CPATH)/../include
-DIR_INC +=-I$(CPATH)/include
+DIR_INC += -I$(CPATH)
+DIR_INC += -I$(CPATH)/include
 DIR_INC += -I$(CPATH)/../server_frame_tools/include
 DIR_INC += -I$(CPATH)/../server_frame_network/include
 DIR_INC += -I/usr/include
@@ -31,12 +32,13 @@ LIB_S += -lboost_filesystem
 #LIB_S += -lcurl
 LIB_S += -lserver_frame_network
 LIB_S += -lserver_frame_tools
+LIB_S += -ldl
 
 ### static link libraries
 
 ### macros
 
-MACROS = -DSERVER_FRAME_BUSINESS_EXPORTS -DBOOST_SPIRIT_THREADSAFE -DBOOST_ALL_DYN_LINK 
+MACROS = -DSERVER_FRAME_BUSINESS_EXPORTS -DBOOST_SPIRIT_THREADSAFE -DBOOST_ALL_DYN_LINK -DTIXML_USE_STL
 
 SRC = $(wildcard $(DIR_SRC)/*.cpp)
 SRC += $(wildcard $(CPATH)/*.cpp)

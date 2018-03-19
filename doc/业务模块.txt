@@ -1,0 +1,47 @@
+1、插件管理模块设计：
+	（1）插件基类(export)
+		plugin_base:
+			属性：
+				(get/set)	插件名称
+				(get)		消息映射表
+				(get/set)	插件管理器
+			操作：
+				(protected)				添加消息映射
+				(public)				send消息
+				(public)				post消息
+				(virtual, protected)	on_message()统一消息映射
+				(virtual, protected)	注册消息函数
+				(virtual, public)		初始化
+		
+	（2）插件工厂基类(export)
+		plugin_factory_base:
+		操作：
+			(pure virtual,public)	创建插件 plugin_base create_plugin(plugin_manager_base*)
+			(public)				释放插件 void release_plugin(plugin_base*)
+			
+	（3）插件管理基类：(export)
+		plugin_manager_base:
+		操作：
+			(pure virtual, public)	加载plugin--> load_plugins(config_file_path, plugins_path)
+			(pure virtual, public)	获取plugin--> plugin_ptr get_plugin(plugin_name)
+			(pure virtual, public)	获取所有plugin--> unordered_map_plugins get_plugins()
+			(pure virtual, public)	send消息--> bool send_msg(msg_id, msg_content, plugin_names=empty)
+			(pure virtual, public)	post消息--> bool post_msg(msg_id, msg_content, plugin_names=empty)
+			(protected)				构造
+			(virtual, protected)	析构
+			
+	（4）插件管理类：(inner)
+		(单例)plugin_manager:(Inherited from plugin_manager_base)
+		struct plugin_info
+		{
+			std::string 			plugin_name;
+			plugin_base* 			plugin;
+			plugin_factory_base*	plugin_factory;
+			bool					enabled;
+		}
+		
+	()XML配置文件
+		顺序有关，按照配置的顺序进行加载,以name为唯一标识
+		<root>
+			<plugin enable="1" name="dllname"\>
+		<\root>

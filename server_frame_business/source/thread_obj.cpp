@@ -12,7 +12,6 @@
 thread_obj::thread_obj()
 	:m_max_task_count(0xFFFFFFFF)
 {
-
 	m_b_exit = false;
 }
 
@@ -38,20 +37,17 @@ task_obj_ptr thread_obj::get_task()
 
 
 unsigned int thread_obj::get_task_count(){
-
 	return m_queue_task.size();
 }
 
 
 bool thread_obj::is_empty(){
-
 	return m_queue_task.empty();
 }
 
 
 bool thread_obj::is_full(){
-
-	return (m_queue_task.size()==m_max_task_count);
+	return (m_queue_task.size() == m_max_task_count);
 }
 
 
@@ -61,7 +57,6 @@ void thread_obj::join(){
 
 
 bool thread_obj::push_task(task_obj_ptr task){
-
 	if (task)
 	{
 		boost::mutex::scoped_lock slock(m_mutex);
@@ -83,20 +78,17 @@ bool thread_obj::push_task(task_obj_ptr task){
 
 
 void thread_obj::start(){
-
 	m_thread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&thread_obj::start_work, this)));
 }
 
 
 void thread_obj::start_work(){
-	
 	while (!m_b_exit)
 	{
 		task_obj_ptr task = get_task();
 		if (task)
 		{
 			task->start();
-
 		}
 		boost::this_thread::interruption_point();
 	}

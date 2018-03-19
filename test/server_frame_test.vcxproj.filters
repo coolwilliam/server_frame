@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="server">
+      <UniqueIdentifier>{7b3d08fc-1fa5-4242-a791-f718ec9e66cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="client">
+      <UniqueIdentifier>{de094d7b-5164-45ee-aa57-1be9627c3ccc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{acd75d7b-57a0-461d-ad29-a0186c83a1d0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="nvram_save.tmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="client\Makefile">
+      <Filter>client</Filter>
+    </None>
+    <None Include="server\Makefile">
+      <Filter>server</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="plugins.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="client\main.cpp">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="server\main.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server_data_handler.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="server\svr.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="client\plugin_log_adapter.cpp">
+      <Filter>client</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="server\server_data_handler.h">
+      <Filter>server</Filter>
+    </ClInclude>
+    <ClInclude Include="include\plugin_log_adapter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\plugin_log_msg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="server\svr.h">
+      <Filter>server</Filter>
+    </ClInclude>
+    <ClInclude Include="include\config_keys.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

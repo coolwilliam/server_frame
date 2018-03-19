@@ -47,7 +47,7 @@ public:
 	*			length
 	* 返回值:	void
 	************************************/
-	void write_byte_array(const char* var_array, unsigned long length);
+	void write_byte_array(const char* var_array, size_t length);
 
 	/************************************
 	* 函数名：	read_byte_array
@@ -57,7 +57,7 @@ public:
 	*			length
 	* 返回值:	void
 	************************************/
-	void read_byte_array(char* var_array, unsigned long length);
+	void read_byte_array(char* var_array, size_t length);
 
 	/************************************
 	* 函数名：	get_data
@@ -73,7 +73,7 @@ public:
 	* 参  数：
 	* 返回值:	unsigned long
 	************************************/
-	unsigned long get_data_length();
+	size_t get_data_length();
 
 	/************************************
 	* 函数名：	get_buffer_length
@@ -81,7 +81,7 @@ public:
 	* 参  数：
 	* 返回值:	unsigned long
 	************************************/
-	unsigned long get_buffer_length();
+	size_t get_buffer_length();
 
 	/************************************
 	* 函数名:   	get_readpos
@@ -89,7 +89,7 @@ public:
 	* 参  数:
 	* 返回值:   	unsigned long
 	************************************/
-	unsigned long get_readpos() const;
+	size_t get_readpos() const;
 	/************************************
 	* 函数名:   	set_readpos
 	* 功  能:	设置当前读取位置
@@ -97,7 +97,7 @@ public:
 	*			new_pos	新设置的位置
 	* 返回值:   	void
 	************************************/
-	void set_readpos(unsigned long new_pos);
+	void set_readpos(size_t new_pos);
 
 	/************************************
 	* 函数名:   	clear_data
@@ -107,20 +107,20 @@ public:
 	*			count		从起始位置开始的个数
 	* 返回值:   	void
 	************************************/
-	void clear_data(unsigned long start_pos = 0, unsigned long count = 0);
+	void clear_data(size_t start_pos = 0, size_t count = 0);
 
 private:
 	//缓冲内存
 	char* m_buffer;
 
 	//当前数据具体长度
-	unsigned long m_current_datalength;
+	size_t m_current_datalength;
 
 	//缓冲总长度
-	unsigned long m_bufferlength;
+	size_t m_bufferlength;
 
 	//当前读取位置
-	unsigned long m_current_read_pos;
+	size_t m_current_read_pos;
 
 private:
 	DISABLE_COPY(data_buffer)
@@ -129,15 +129,15 @@ private:
 template<typename T>
 inline data_buffer& data_buffer::operator << (const T& var_in)
 {
-	unsigned long var_size = sizeof(var_in);
+	size_t var_size = sizeof(var_in);
 
 	//判断即将打包的数据是否会超出当前缓冲大小，需要扩充
 	if (var_size + m_current_datalength > m_bufferlength)
 	{
-		unsigned long append_size = m_current_datalength + var_size - m_bufferlength;
+		size_t append_size = m_current_datalength + var_size - m_bufferlength;
 		append_size = append_size > append_data_length ? append_size : append_data_length;
 
-		m_buffer = (char*)realloc(m_buffer, (m_bufferlength + append_size)*sizeof(char));
+		m_buffer = reinterpret_cast<char*>(realloc(m_buffer, (m_bufferlength + append_size)*sizeof(char)));
 
 		m_bufferlength += append_size;
 	}
@@ -172,26 +172,26 @@ inline data_buffer& data_buffer::operator << (const T& var_in)
 template<typename T>
 inline data_buffer& data_buffer::operator >> (T& var_out)
 {
-	unsigned long var_size = sizeof(var_out);
-	assert(var_size < m_current_datalength - m_current_read_pos);
+	size_t var_size = sizeof(var_out);
+	assert(var_size <= m_current_datalength - m_current_read_pos);
 
 	switch (var_size)
 	{
 		case 1:
-			unpack1(m_buffer + m_current_read_pos, (char*)&var_out);
+			unpack1(m_buffer + m_current_read_pos, reinterpret_cast<char*>(&var_out));
 			break;
 		case 2:
-			unpack2(m_buffer + m_current_read_pos, (char*)&var_out);
+			unpack2(m_buffer + m_current_read_pos, reinterpret_cast<char*>(&var_out));
 			break;
 		case 4:
-			unpack4(m_buffer + m_current_read_pos, (char*)&var_out);
+			unpack4(m_buffer + m_current_read_pos, reinterpret_cast<char*>(&var_out));
 			break;
 		case 8:
-			unpack8(m_buffer + m_current_read_pos, (char*)&var_out);
+			unpack8(m_buffer + m_current_read_pos, reinterpret_cast<char*>(&var_out));
 			break;
 		default:
 			{
-				unpack_byte_array(m_buffer + m_current_read_pos, var_size, (char*)&var_out);
+				unpack_byte_array(m_buffer + m_current_read_pos, var_size, reinterpret_cast<char*>(&var_out));
 			}
 	}
 
@@ -200,20 +200,19 @@ inline data_buffer& data_buffer::operator >> (T& var_out)
 	return *this;
 }
 
-//针对string的特殊处理
+// 针对string的特殊处理
 template<>
 inline data_buffer& data_buffer::operator << <string>(const string& var_in)
 {
-
-	unsigned long var_size = var_in.size();
+	size_t var_size = var_in.size();
 
 	//判断即将打包的数据是否会超出当前缓冲大小，需要扩充
 	if (var_size + m_current_datalength > m_bufferlength)
 	{
-		unsigned long append_size = m_current_datalength + var_size - m_bufferlength;
+		size_t append_size = m_current_datalength + var_size - m_bufferlength;
 		append_size = append_size > append_data_length ? append_size : append_data_length;
 
-		m_buffer = (char*)realloc(m_buffer, (m_bufferlength + append_size)*sizeof(char));
+		m_buffer = reinterpret_cast<char*>(realloc(m_buffer, (m_bufferlength + append_size)*sizeof(char)));
 
 		m_bufferlength += append_size;
 	}
@@ -239,7 +238,7 @@ inline data_buffer& data_buffer::operator >> <string>(string& var_out)
 		return *this;
 	}
 
-	unsigned long var_size = strlen(m_buffer + m_current_read_pos);
+	size_t var_size = strnlen(m_buffer + m_current_read_pos, m_current_datalength - m_current_read_pos);
 
 	if (var_size != 0)
 	{

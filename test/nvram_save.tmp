@@ -1,0 +1,9 @@
+ssdb_thread_pool_size=10
+comm_server_port=30000
+ue_server_port=30001
+data_server_port=30002
+conf_server_port=30003
+heart_beat_time=60
+proxy_server_ip=192.168.109.192
+lua_file_path=/root/work/billing_server_third/lua_obj/lobj.lua
+session_idle_check_time=5

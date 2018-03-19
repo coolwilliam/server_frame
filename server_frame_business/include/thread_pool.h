@@ -8,28 +8,20 @@
 #if !defined(EA_474432E6_2AAE_4923_8623_F2B537A53168__INCLUDED_)
 #define EA_474432E6_2AAE_4923_8623_F2B537A53168__INCLUDED_
 
-#include "business_ptr_define.h"
 #include <vector>
-#include "common_macro.h"
-#include "business_exports.h"
 using namespace std;
+#include "business_exports.h"
+#include "common_macro.h"
+#include "business_ptr_define.h"
+#include "common_singleton.hpp"
+
 /**
  * 任务线程池
  */
-class SERVER_FRAME_BUSINESS_API thread_pool
+class SERVER_FRAME_BUSINESS_API thread_pool : public common_singleton<thread_pool>
 {
-
 public:
 	typedef vector<thread_obj_ptr> vect_thread_t;
-	/**
-	 *	获取单实例
-	 */
-	static thread_pool* get_instance();
-
-	/**
-	*	释放单实例
-	*/
-	static void release_instance();
 
 	/**
 	 * 添加任务到线程池中
@@ -53,8 +45,9 @@ public:
 	void stop_threads();
 
 private:
-	thread_pool();
-	virtual ~thread_pool();
+	friend class common_singleton<thread_pool>;
+	thread_pool(){}
+	~thread_pool(){}
 
 	/**
 	* 比较线程的任务数，是否是first < second
@@ -67,11 +60,6 @@ private:
 
 private:
 	/**
-	 *	单实例对象
-	 */
-	static thread_pool* m_instance;
-
-	/**
 	 * 线程池大小
 	 */
 	unsigned int m_pool_size;
@@ -79,9 +67,5 @@ private:
 	 * 线程链表
 	 */
 	thread_pool::vect_thread_t m_vect_thread;
-
-private:
-	DISABLE_COPY(thread_pool)
-
 };
-#endif // !defined(EA_474432E6_2AAE_4923_8623_F2B537A53168__INCLUDED_)
+#endif  // !defined(EA_474432E6_2AAE_4923_8623_F2B537A53168__INCLUDED_)

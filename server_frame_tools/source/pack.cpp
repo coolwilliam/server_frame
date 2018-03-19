@@ -69,7 +69,7 @@ uint64_t NTOHLL(uint64_t var_8)
 }
 
 
-int pack_byte_array(const char* IN var_array, const unsigned long IN length, char* IN_OUT buffer)
+int pack_byte_array(const char* IN var_array, const size_t IN length, char* IN_OUT buffer)
 {
 	if (NULL == var_array
 		|| 0 == length
@@ -98,10 +98,9 @@ int pack1(const char* IN var_1,
 	return 1;
 }
 
-int pack2(const char* IN var_2, 
+int pack2(const char* IN var_2,
 	char* IN_OUT buffer)
 {
-
 	//判断当前传入参数的正确性
 	if (NULL == var_2
 		|| NULL == buffer)
@@ -109,7 +108,7 @@ int pack2(const char* IN var_2,
 		return eec_param_err;
 	}
 
-	*((uint16_t*)buffer) = htons(*((uint16_t*)var_2));
+	*(reinterpret_cast<uint16_t*>(buffer)) = htons(*(uint16_t*)(var_2));
 
 /*
 	char* tmp1 = NULL;
@@ -150,7 +149,7 @@ int pack4(const char* IN var_4, char* IN_OUT buffer)
 	{
 		return eec_param_err;
 	}
-	*((uint32_t*)buffer) = htonl(*((uint32_t*)var_4));
+	*(reinterpret_cast<uint32_t*>(buffer)) = htonl(*(uint32_t*)(var_4));
 
 /*
 	const char* tmp1 = var_4;
@@ -182,7 +181,7 @@ int pack8(const char* IN var_8, char* IN_OUT buffer)
 		return eec_param_err;
 	}
 
-	*((uint64_t*)buffer) = HTONLL(*((uint64_t*)var_8));
+	*(reinterpret_cast<uint64_t*>(buffer)) = HTONLL(*(uint64_t*)(var_8));
 
 
 /*
@@ -206,7 +205,7 @@ int pack8(const char* IN var_8, char* IN_OUT buffer)
 
 
 
-int unpack_byte_array(const char* IN buffer, const unsigned long IN length, char* IN_OUT var_array)
+int unpack_byte_array(const char* IN buffer, const size_t IN length, char* IN_OUT var_array)
 {
 	if (NULL == var_array
 		|| 0 == length
@@ -238,7 +237,6 @@ int unpack1(const char* IN buffer,
 int unpack2(const char* IN buffer,
 	char* IN_OUT var_2)
 {
-
 	//判断当前传入参数的正确性
 	if (NULL == var_2
 		|| NULL == buffer)
@@ -246,7 +244,7 @@ int unpack2(const char* IN buffer,
 		return eec_param_err;
 	}
 
-	*((uint16_t*)var_2) = ntohs(*((uint16_t*)buffer));
+	*(reinterpret_cast<uint16_t*>(var_2)) = ntohs(*(uint16_t*)(buffer));
 
 /*
 	char* tmp1 = NULL;
@@ -288,7 +286,7 @@ int unpack4(const char* IN buffer, char* IN_OUT var_4)
 		return eec_param_err;
 	}
 
-	*((uint32_t*)var_4) = ntohl(*((uint32_t*)buffer));
+	*(reinterpret_cast<uint32_t*>(var_4)) = ntohl(*(uint32_t*)(buffer));
 
 /*
 	const char* tmp1 = buffer;
@@ -318,7 +316,7 @@ int unpack8(const char* IN buffer, char* IN_OUT var_8)
 		return eec_param_err;
 	}
 
-	*((uint64_t*)var_8) = NTOHLL(*((uint64_t*)buffer));
+	*(reinterpret_cast<uint64_t*>(var_8)) = NTOHLL(*(uint64_t*)(buffer));
 
 /*
 	const char* tmp1 = buffer;

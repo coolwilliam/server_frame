@@ -1,14 +1,14 @@
 #ifndef simple_kv_config_h__
 #define simple_kv_config_h__
 
-//#include <boost/shared_ptr.hpp>
-//#include <boost/thread/mutex.hpp>
+// #include <boost/shared_ptr.hpp>
+// #include <boost/thread/mutex.hpp>
+#include <assert.h>
+#include <string.h>
 #include <map>
 #include <string>
 #include <typeinfo>
 #include <sstream>
-#include <assert.h>
-#include <string.h>
 using namespace std;
 
 #include "common_macro.h"
@@ -19,6 +19,8 @@ class SERVER_FRAME_TOOL_API simple_kv_config
 public:
 	simple_kv_config();
 	~simple_kv_config();
+
+	typedef map<string, string> map_kv_t, map_valid_type_t;
 
 	/************************************
 	* 函数名:   	load_file
@@ -69,8 +71,15 @@ public:
 	************************************/
 	bool commit();
 
-private:
+	/************************************
+	* 函数名:   	get_all
+	* 功  能:	获取所有配置项
+	* 参  数: 	
+	* 返回值:   	simple_kv_config::map_kv_t
+	************************************/
+	map_kv_t get_all() const;
 
+private:
 	/************************************
 	* 函数名:   	save_file
 	* 功  能:	保存配置信息到配置文件
@@ -117,8 +126,6 @@ private:
 
 private:
 
-	typedef map<string, string> map_kv_t, map_valid_type_t;
-
 	//配置字典
 	map_kv_t m_map_kv;
 
@@ -126,7 +133,7 @@ private:
 	string m_path;
 
 	//锁
-//	boost::mutex m_kv_mutex;
+	// boost::mutex m_kv_mutex;
 
 	//有效的类型名称字典
 	map_valid_type_t m_map_valid_type;
@@ -171,4 +178,4 @@ bool simple_kv_config::set(const string& key, const T& value)
 	return set_string(key, ss.str());
 }
 
-#endif // simple_kv_config_h__
+#endif  // simple_kv_config_h__

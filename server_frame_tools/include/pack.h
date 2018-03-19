@@ -10,6 +10,8 @@
 #ifndef pack_h__
 #define pack_h__
 
+#include <cstddef>
+
 #ifndef IN
 #define IN
 #endif
@@ -38,8 +40,8 @@ enum em_err_code
 *			buffer
 * 返回值:	int
 ************************************/
-int pack_byte_array(const char* IN var_array, 
-	const unsigned long IN length, 
+int pack_byte_array(const char* IN var_array,
+	const size_t IN length,
 	char* IN_OUT buffer);
 /************************************
 * 函数名：	pack1
@@ -49,7 +51,7 @@ int pack_byte_array(const char* IN var_array,
 *			buffer
 * 返回值:	int
 ************************************/
-int pack1(const char* IN var_1, 
+int pack1(const char* IN var_1,
 	char* IN_OUT buffer);
 /************************************
 * 函数名：	pack2
@@ -59,7 +61,7 @@ int pack1(const char* IN var_1,
 *			buffer
 * 返回值:	int
 ************************************/
-int pack2(const char* IN var_2, 
+int pack2(const char* IN var_2,
 	char* IN_OUT buffer);
 /************************************
 * 函数名：	pack4
@@ -69,7 +71,7 @@ int pack2(const char* IN var_2,
 *			buffer
 * 返回值:	int
 ************************************/
-int pack4(const char* IN var_4, 
+int pack4(const char* IN var_4,
 	char* IN_OUT buffer);
 /************************************
 * 函数名：	pack8
@@ -79,7 +81,7 @@ int pack4(const char* IN var_4,
 *			buffer
 * 返回值:	int
 ************************************/
-int pack8(const char* IN var_8, 
+int pack8(const char* IN var_8,
 	char* IN_OUT buffer);
 
 /*================================= unpack ===================================*/
@@ -93,8 +95,8 @@ int pack8(const char* IN var_8,
 *			var_array
 * 返回值:	int
 ************************************/
-int unpack_byte_array(const char* IN buffer, 
-	const unsigned long IN length, 
+int unpack_byte_array(const char* IN buffer,
+	const size_t IN length,
 	char* IN_OUT var_array);
 
 
@@ -135,6 +137,6 @@ int unpack4(const char* IN buffer, char* IN_OUT var_4);
 ************************************/
 int unpack8(const char* IN buffer, char* IN_OUT var_8);
 
-#endif // pack_h__
+#endif  // pack_h__
 
 

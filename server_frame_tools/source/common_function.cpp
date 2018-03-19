@@ -3,6 +3,9 @@
 #include <string.h>
 #include <dlfcn.h>
 
+#ifndef FILE_PATH_MAX
+#define FILE_PATH_MAX 256
+#endif
 
 void common_function::get_module_fullpath(char* fullpath, void* local_addr /*= NULL*/)
 {
@@ -20,7 +23,7 @@ void common_function::get_module_fullpath(char* fullpath, void* local_addr /*= N
 	}
 	else
 	{
-		sprintf(fullpath, info.dli_fname);
+		snprintf(fullpath, FILE_PATH_MAX, info.dli_fname);
 	}
 
 	return;
@@ -28,7 +31,7 @@ void common_function::get_module_fullpath(char* fullpath, void* local_addr /*= N
 
 std::string common_function::get_module_dir(void* local_addr /*= NULL*/)
 {
-	char fullpath[256] = { 0 };
+	char fullpath[FILE_PATH_MAX] = { 0 };
 
 	common_function::get_module_fullpath(fullpath, local_addr);
 
@@ -36,7 +39,7 @@ std::string common_function::get_module_dir(void* local_addr /*= NULL*/)
 	{
 		return std::string("");
 	}
-	//反向查找 '/' 
+	//反向查找 '/'
 	std::string str_path = std::string(fullpath);
 	std::string::size_type npos = str_path.rfind('/');
 	if (npos != str_path.npos)

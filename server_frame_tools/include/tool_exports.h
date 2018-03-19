@@ -6,13 +6,13 @@
 #define SERVER_FRAME_TOOL_API
 #else
 #define SERVER_FRAME_TOOL_API (extern "C")
-#endif //__cplusplus
+#endif  // __cplusplus
 #else
 #ifdef __cplusplus
 #define SERVER_FRAME_TOOL_API
 #else
 #define SERVER_FRAME_TOOL_API (extern "C")
-#endif //__cplusplus
-#endif //SERVER_FRAME_TOOLS_EXPORTS
+#endif  // __cplusplus
+#endif  // SERVER_FRAME_TOOLS_EXPORTS
 
-#endif // tool_exports_h__
+#endif  // tool_exports_h__

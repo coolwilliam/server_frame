@@ -30,4 +30,4 @@ public:
 };
 
 
-#endif // common_function_h__
+#endif  // common_function_h__

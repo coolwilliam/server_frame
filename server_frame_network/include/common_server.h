@@ -7,6 +7,9 @@
 #if !defined(EA_367432EF_52BD_46e0_B3CF_56ECE9ACFB34__INCLUDED_)
 #define EA_367432EF_52BD_46e0_B3CF_56ECE9ACFB34__INCLUDED_
 
+#include <string>
+using namespace std;
+
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/tcp.hpp>
 using namespace boost::asio;
@@ -16,12 +19,13 @@ using boost::asio::ip::tcp;
 #include "network_ptr_define.h"
 #include "common_macro.h"
 #include "network_exports.h"
+#include "network_define.h"
 
 class SERVER_FRAME_NETWORK_API common_server
 {
-
 public:
 	common_server(io_service& ios, const tcp::endpoint& ep_bind);
+	common_server(io_service_pool_ptr iosp, const tcp::endpoint& ep_bind);
 	virtual ~common_server();
 
 	/************************************
@@ -47,6 +51,41 @@ public:
 	************************************/
 	void start();
 
+	/************************************
+	* 函数名:   	get_comm_mode
+	* 功  能:	获取通信方式
+	* 参  数: 	
+	* 返回值:   	enum_communicate_mode
+	************************************/
+	enum_communicate_mode get_comm_mode() const;
+
+	/************************************
+	* 函数名:   	set_comm_mode
+	* 功  能:	设置通信方式
+	* 参  数: 	
+	*			newVal
+	* 返回值:   	void
+	************************************/
+	void set_comm_mode(enum_communicate_mode newVal);
+
+	/************************************
+	* 函数名:   	is_started
+	* 功  能:	是否已经启动
+	* 参  数: 	
+	* 返回值:   	bool
+	************************************/
+	bool is_started() const;
+
+	/************************************
+	* 函数名:   	accept
+	* 功  能:	监听连接
+	* 参  数: 	
+	*			err_code
+	*			err_msg
+	* 返回值:   	common_session_ptr
+	************************************/
+	common_session_ptr accept(int& err_code, string& err_msg);
+
 private:
 	/************************************
 	* 函数名:   	start_accept
@@ -64,10 +103,22 @@ private:
 	************************************/
 	void handle_accept(common_session_ptr& session, const boost::system::error_code & error);
 
-
+	/************************************
+	* 函数名:   	set_started
+	* 功  能:	是否已经启动
+	* 参  数: 	
+	*			newVal
+	* 返回值:   	void
+	************************************/
+	void set_started(bool newVal = true);
 private:
 	/**
-	 * boost IO服务
+	*	io_service_pool（多线程）
+	*/
+	io_service_pool_ptr m_ios_pool;
+
+	/**
+	 * boost IO服务（主线程）
 	 */
 	io_service & m_io_service;
 
@@ -81,8 +132,17 @@ private:
 	 */
 	data_handler_ptr m_p_data_handler;
 
+	/**
+	 * 通信方式
+	 */
+	enum_communicate_mode m_comm_mode;
+
+	/**
+	* 是否已经启动
+	*/
+	bool					m_started;
+
 private:
 	DISABLE_COPY(common_server)
-
 };
-#endif // !defined(EA_367432EF_52BD_46e0_B3CF_56ECE9ACFB34__INCLUDED_)
+#endif  // !defined(EA_367432EF_52BD_46e0_B3CF_56ECE9ACFB34__INCLUDED_)

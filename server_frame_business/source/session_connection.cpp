@@ -11,16 +11,16 @@
 
 session_connection::session_connection()
 	:m_session_id(0)
+	, m_close_on_destroy(true)
 {
-
 }
 
 
-session_connection::session_connection(common_session_ptr first, common_session_ptr second, session_id_t id) 
+session_connection::session_connection(common_session_ptr first, common_session_ptr second, session_id_t id)
 	: m_pair(first, second)
 	, m_session_id(id)
+	, m_close_on_destroy(true)
 {
-
 }
 
 session_connection::~session_connection()
@@ -29,7 +29,6 @@ session_connection::~session_connection()
 }
 
 int session_connection::close_session(common_session_ptr session){
-
 	if (m_pair.first == session)
 	{
 		m_pair.first.reset();
@@ -54,31 +53,32 @@ int session_connection::close_session(common_session_ptr session){
 
 
 void session_connection::destroy(){
-
 	//清空缓存
 	m_list_cache.clear();
 
 	//关闭连接
-	if (NULL != m_pair.first)
+	if (true == is_close_on_destroy())
 	{
-		m_pair.first->close();
-	}
-
-	if (NULL != m_pair.second)
-	{
-		m_pair.second->close();
+		if (NULL != m_pair.first)
+		{
+			m_pair.first->close();
+		}
+	
+		if (NULL != m_pair.second)
+		{
+			m_pair.second->close();
+		}
 	}
 }
 
 
 bool session_connection::find_session(common_session_ptr session) const {
-
 	if (NULL == session)
 	{
 		return false;
 	}
 
-	if (session == m_pair.first 
+	if (session == m_pair.first
 		|| session == m_pair.second)
 	{
 		return true;
@@ -89,7 +89,6 @@ bool session_connection::find_session(common_session_ptr session) const {
 
 
 common_session_ptr session_connection::get_other(common_session_ptr session) const {
-
 	if (NULL == session)
 	{
 		return  common_session_ptr();
@@ -105,10 +104,9 @@ common_session_ptr session_connection::get_other(common_session_ptr session) con
 	}
 	else
 	{
-		//在键值对里面不存在传入的session
+		// 在键值对里面不存在传入的session
 		return common_session_ptr();
 	}
-
 }
 
 
@@ -125,7 +123,6 @@ session_connection::session_pair_t session_connection::get_sesson_pair() const
 
 
 bool session_connection::push_cache(data_buffer_ptr data, common_session_ptr src){
-
 	assert(find_session(src) && "can't push to cache when source session is not found in this connection !");
 
 	m_list_cache.push_back(make_pair(data, src));
@@ -146,7 +143,7 @@ bool session_connection::send_cache()
 		{
 			string str_data;
 			str_data.resize(it_begin->first->get_data_length());
-			//str_data.insert(0, it_begin->first->get_data(), it_begin->first->get_data_length());
+			// str_data.insert(0, it_begin->first->get_data(), it_begin->first->get_data_length());
 			memcpy((void*)(str_data.data()), it_begin->first->get_data(), it_begin->first->get_data_length());
 			other->send_msg(str_data);
 
@@ -156,7 +153,7 @@ bool session_connection::send_cache()
 		else
 		{
 			//如果另一端为空，则指向下一个元素，继续发送
-			it_begin++;
+			++it_begin;
 		}
 	}
 
@@ -165,7 +162,6 @@ bool session_connection::send_cache()
 
 
 void session_connection::send_data(data_buffer_ptr data, common_session_ptr src){
-
 	//判断是否是属于该联接的会话
 	if (false == find_session(src))
 	{
@@ -192,11 +188,10 @@ void session_connection::send_data(data_buffer_ptr data, common_session_ptr src)
 }
 
 
-void session_connection::set_session(common_session_ptr session){
-
+bool session_connection::set_session(common_session_ptr session){
 	if (NULL == session)
 	{
-		return;
+		return false;
 	}
 
 	if (session != m_pair.first
@@ -209,16 +204,33 @@ void session_connection::set_session(common_session_ptr session){
 	{
 		m_pair.first = session;
 	}
+	else if (session == m_pair.first
+		|| session == m_pair.second)
+	{
+		//Do nothing.
+	}
 	else
 	{
-		assert(false && "can't set session to a full session_connection!");
+		//Can't set session to a full session_connection!"
+		return false;
 	}
+
+	return true;
 }
 
 
 void session_connection::set_session_id(session_connection::session_id_t id){
-
 	assert(m_session_id == 0 && "session id can't be set for more than once !");
 
 	m_session_id = id;
+}
+
+bool session_connection::is_close_on_destroy() const
+{
+	return m_close_on_destroy;
+}
+
+void session_connection::set_close_on_destroy(bool val/* = true*/)
+{
+	m_close_on_destroy = val;
 }

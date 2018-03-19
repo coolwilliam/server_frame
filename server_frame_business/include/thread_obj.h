@@ -8,10 +8,12 @@
 #if !defined(EA_6098D382_BD3F_4843_B9A6_E1B088F6EE4E__INCLUDED_)
 #define EA_6098D382_BD3F_4843_B9A6_E1B088F6EE4E__INCLUDED_
 
-#include <boost/thread/condition_variable.hpp>
 #include <queue>
-#include <boost/thread.hpp>
 using namespace std;
+
+#include <boost/thread.hpp>
+#include <boost/thread/condition_variable.hpp>
+
 
 #include "business_ptr_define.h"
 #include "common_macro.h"
@@ -22,7 +24,6 @@ using namespace std;
  */
 class SERVER_FRAME_BUSINESS_API thread_obj
 {
-
 public:
 	thread_obj();
 	virtual ~thread_obj();
@@ -87,4 +88,4 @@ private:
 private:
 	DISABLE_COPY(thread_obj)
 };
-#endif // !defined(EA_6098D382_BD3F_4843_B9A6_E1B088F6EE4E__INCLUDED_)
+#endif  // !defined(EA_6098D382_BD3F_4843_B9A6_E1B088F6EE4E__INCLUDED_)

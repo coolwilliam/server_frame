@@ -16,7 +16,7 @@
 class task_obj
 {
 public:
-	task_obj(){};
+	task_obj(){}
 
 	/**
 	 * Æô¶¯ÈÎÎñ
@@ -24,11 +24,11 @@ public:
 	virtual int start() = 0;
 
 protected:
-	virtual ~task_obj(){};
+	virtual ~task_obj(){}
 
 
 
 private:
 	DISABLE_COPY(task_obj)
 };
-#endif // !defined(EA_8DC2A168_3235_472b_9762_6BD1B46CC9FD__INCLUDED_)
+#endif  // !defined(EA_8DC2A168_3235_472b_9762_6BD1B46CC9FD__INCLUDED_)

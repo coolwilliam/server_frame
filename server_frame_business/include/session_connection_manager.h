@@ -8,36 +8,22 @@
 #if !defined(EA_3CB22261_BFBB_4bf7_989B_9F6194F8F7BA__INCLUDED_)
 #define EA_3CB22261_BFBB_4bf7_989B_9F6194F8F7BA__INCLUDED_
 
-#include "session_connection.h"
-#include "business_ptr_define.h"
 #include <map>
 using namespace std;
 
+#include "session_connection.h"
+#include "business_ptr_define.h"
 #include "common_macro.h"
 #include "business_exports.h"
+#include "common_singleton.hpp"
+#include <boost/thread/mutex.hpp>
 
 /**
  * 会话联接管理器
  */
-class SERVER_FRAME_BUSINESS_API session_connection_manager
+class SERVER_FRAME_BUSINESS_API session_connection_manager : public common_singleton<session_connection_manager>
 {
-
 public:
-	/************************************
-	* 函数名:   	get_instance
-	* 功  能:	获取单件
-	* 参  数: 	
-	* 返回值:   	session_connection_manager*
-	************************************/
-	static session_connection_manager* get_instance();
-	/************************************
-	* 函数名:   	release_instance
-	* 功  能:	释放单件
-	* 参  数: 	
-	* 返回值:   	void
-	************************************/
-	static void release_instance();
-
 	/************************************
 	* 函数名:   	add_session_connection
 	* 功  能:	增加会话联接
@@ -73,22 +59,17 @@ public:
 	* 返回值:   	session_connection_ptr
 	************************************/
 	session_connection_ptr find_session_connection(common_session_ptr session);
-
 private:
-	session_connection_manager();
-	~session_connection_manager();
-
+	friend class common_singleton<session_connection_manager>;
+	session_connection_manager(){}
+	~session_connection_manager(){}
 private:
 	typedef map<session_connection::session_id_t, session_connection_ptr> map_session_connection_t;
-	
+
 	//会话联接字典
 	session_connection_manager::map_session_connection_t m_map_sc;
 
-	//单件
-	static session_connection_manager* m_p_instance;
-
-private:
-	DISABLE_COPY(session_connection_manager)
-
+	//会话联接字典互斥锁
+	boost::mutex	m_mtx_sc;
 };
-#endif // !defined(EA_3CB22261_BFBB_4bf7_989B_9F6194F8F7BA__INCLUDED_)
+#endif  // !defined(EA_3CB22261_BFBB_4bf7_989B_9F6194F8F7BA__INCLUDED_)

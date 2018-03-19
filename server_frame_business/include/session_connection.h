@@ -8,13 +8,13 @@
 #if !defined(EA_4E3F0DD7_1F36_4f24_9E98_8769316DA052__INCLUDED_)
 #define EA_4E3F0DD7_1F36_4f24_9E98_8769316DA052__INCLUDED_
 
-#include "business_ptr_define.h"
-#include "network_ptr_define.h"
-#include "tool_ptr_define.h"
 #include <utility>
 #include <list>
 using namespace std;
 
+#include "business_ptr_define.h"
+#include "network_ptr_define.h"
+#include "tool_ptr_define.h"
 #include "common_macro.h"
 #include "business_exports.h"
 
@@ -23,7 +23,6 @@ using namespace std;
  */
 class SERVER_FRAME_BUSINESS_API session_connection
 {
-
 public:
 	typedef pair<common_session_ptr, common_session_ptr> session_pair_t;
 
@@ -109,9 +108,9 @@ public:
 	* 功  能:	设置会话
 	* 参  数: 	
 	*			session	会话
-	* 返回值:   	void
+	* 返回值:   	bool
 	************************************/
-	void set_session(common_session_ptr session);
+	bool set_session(common_session_ptr session);
 
 	/************************************
 	* 函数名:   	set_session_id
@@ -122,18 +121,37 @@ public:
 	************************************/
 	void set_session_id(session_connection::session_id_t id);
 
+	/************************************
+	* 函数名:   	is_close_on_destroy
+	* 功  能:	是否销毁即关闭
+	* 参  数: 	
+	* 返回值:   	bool
+	************************************/
+	bool is_close_on_destroy() const;
+
+	/************************************
+	* 函数名:   	set_close_on_destroy
+	* 功  能:	设置销毁即关闭
+	* 参  数: 	
+	*			val
+	* 返回值:   	void
+	************************************/
+	void set_close_on_destroy(bool val = true);
 private:
 	typedef pair<data_buffer_ptr, common_session_ptr> pair_cache_t;
 	typedef list<pair_cache_t> list_pair_cache_t;
 
-	//缓存队列
+	// 缓存队列
 	list_pair_cache_t m_list_cache;
 
-	//会话键值对
+	// 会话键值对
 	session_connection::session_pair_t m_pair;
 
-	//会话ID
+	// 会话ID
 	session_connection::session_id_t m_session_id;
+
+	// 销毁联接时，关闭相关的会话
+	bool m_close_on_destroy;
 
 private:
 	/************************************
@@ -147,6 +165,5 @@ private:
 	bool push_cache(data_buffer_ptr data, common_session_ptr src);
 
 	DISABLE_COPY(session_connection)
-
 };
-#endif // !defined(EA_4E3F0DD7_1F36_4f24_9E98_8769316DA052__INCLUDED_)
+#endif  // !defined(EA_4E3F0DD7_1F36_4f24_9E98_8769316DA052__INCLUDED_)
