@@ -8,12 +8,16 @@
 
 data_buffer::data_buffer()
 {
-	m_buffer				= reinterpret_cast<char*>(malloc(init_data_length*sizeof(char)));
-	memset(m_buffer, 0x00, init_data_length);
-
 	m_bufferlength			= init_data_length;
 	m_current_datalength	= 0;
 	m_current_read_pos		= 0;
+
+	m_buffer = reinterpret_cast<char*>(malloc(init_data_length*sizeof(char)));
+	if (NULL == m_buffer)
+	{
+		assert(false && "malloc data failed!");
+	}
+	memset(m_buffer, 0x00, init_data_length);
 }
 
 

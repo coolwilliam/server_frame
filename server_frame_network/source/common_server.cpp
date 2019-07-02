@@ -11,16 +11,16 @@
 #include "data_handler.h"
 #include "io_service_pool.h"
 
-common_server::common_server(io_service& ios, const tcp::endpoint& ep_bind)
+common_server::common_server(boost::asio::io_service& ios, const boost::asio::ip::tcp::endpoint& ep_bind, bool reuse_address/* = false*/)
 	:m_ios_pool(io_service_pool_ptr())
 	, m_io_service(ios)
-	, m_acceptor(ios, ep_bind)
+	, m_acceptor(ios, ep_bind, reuse_address)
 	, m_comm_mode(ECM_ASYNC)
 	, m_started(false)
 {
 }
 
-common_server::common_server(io_service_pool_ptr iosp, const tcp::endpoint& ep_bind)
+common_server::common_server(io_service_pool_ptr iosp, const boost::asio::ip::tcp::endpoint& ep_bind)
 	:m_ios_pool(iosp)
 	, m_io_service(m_ios_pool->get_io_service())
 	, m_acceptor(m_io_service, ep_bind)
@@ -30,7 +30,18 @@ common_server::common_server(io_service_pool_ptr iosp, const tcp::endpoint& ep_b
 
 }
 
+common_server::common_server(boost::asio::io_service& ios)
+	:m_ios_pool(io_service_pool_ptr())
+	, m_io_service(ios)
+	, m_acceptor(ios)
+	, m_comm_mode(ECM_ASYNC)
+	, m_started(false)
+{
+
+}
+
 common_server::~common_server(){
+	stop();
 }
 
 
@@ -81,7 +92,7 @@ void common_server::start()
 	if (get_comm_mode() == ECM_ASYNC)
 	{
 		start_accept();
-	}	
+	}
 }
 
 
@@ -100,7 +111,7 @@ void common_server::start_accept()
 	new_session->set_comm_mode(get_comm_mode());
 
 	m_acceptor.async_accept(new_session->get_socket(),
-		boost::bind(&common_server::handle_accept, this, new_session, boost::asio::placeholders::error));
+		boost::bind(&common_server::handle_accept, shared_from_this(), new_session, boost::asio::placeholders::error));
 }
 
 enum_communicate_mode common_server::get_comm_mode() const
@@ -120,12 +131,12 @@ bool common_server::is_started() const
 	return m_started;
 }
 
-common_session_ptr common_server::accept(int& err_code, string& err_msg)
+common_session_ptr common_server::accept(int& err_code, std::string& err_msg)
 {
 	assert(is_started() && "Server should be started first!");
 	assert(get_comm_mode() == ECM_SYNC && "Can't call this function in async mode");
 
-	system::error_code error;
+	boost::system::error_code error;
 
 	common_session_ptr new_session(new common_session(m_io_service));
 	new_session->set_comm_mode(get_comm_mode());
@@ -144,7 +155,23 @@ common_session_ptr common_server::accept(int& err_code, string& err_msg)
 	return new_session;
 }
 
+void common_server::stop()
+{
+	if (m_acceptor.is_open())
+	{
+		boost::system::error_code ec;
+		m_acceptor.close(ec);
+	}
+
+	set_started(false);
+}
+
 void common_server::set_started(bool newVal){
 	m_started = newVal;
+}
+
+boost::asio::ip::tcp::acceptor& common_server::acceptor()
+{
+	return m_acceptor;
 }
 

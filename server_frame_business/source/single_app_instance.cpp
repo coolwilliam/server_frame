@@ -39,6 +39,10 @@ bool single_app_instance::set_lock(int i_fd)
 		return false;
 	}
 
+	// Clear file content.
+	ftruncate(i_fd, 0);
+	lseek(i_fd, 0, SEEK_SET);
+
 	pid_t pid = getpid();
 
 	std::ostringstream oss;

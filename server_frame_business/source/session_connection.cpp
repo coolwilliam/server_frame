@@ -116,7 +116,7 @@ session_connection::session_id_t session_connection::get_session_id() const
 }
 
 
-session_connection::session_pair_t session_connection::get_sesson_pair() const
+session_connection::session_pair_t session_connection::get_session_pair() const
 {
 	return  m_pair;
 }
@@ -141,7 +141,7 @@ bool session_connection::send_cache()
 		common_session_ptr other = get_other(it_begin->second);
 		if (NULL != other)
 		{
-			string str_data;
+			std::string str_data;
 			str_data.resize(it_begin->first->get_data_length());
 			// str_data.insert(0, it_begin->first->get_data(), it_begin->first->get_data_length());
 			memcpy((void*)(str_data.data()), it_begin->first->get_data(), it_begin->first->get_data_length());
@@ -179,7 +179,7 @@ void session_connection::send_data(data_buffer_ptr data, common_session_ptr src)
 	}
 	else
 	{
-		string str_data;
+		std::string str_data;
 		str_data.resize(data->get_data_length());
 		memcpy((void*)(str_data.data()), data->get_data(), data->get_data_length());
 

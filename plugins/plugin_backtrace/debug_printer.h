@@ -2,7 +2,6 @@
 #define debug_printer_h__
 
 #include <iosfwd>
-using namespace std;
 
 class debug_printer
 {
@@ -14,7 +13,7 @@ public:
 #define DEBUG_MSG(logs) \
 	do \
 	{\
-		ostringstream var;\
+		std::ostringstream var;\
 		var << "[" << __FILE__ << ":" << __LINE__ << "] - " <<logs;\
 		debug_printer::print_msg(var.str().c_str());\
 	}while (0)
@@ -22,7 +21,7 @@ public:
 #define DEBUG_ERROR(logs) \
 	do \
 	{\
-		ostringstream var;\
+		std::ostringstream var;\
 		var << "[" << __FILE__ << ":" << __LINE__ << "] - " <<logs;\
 		debug_printer::print_err(var.str().c_str());\
 	}while (0)

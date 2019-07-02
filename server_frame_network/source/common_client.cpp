@@ -9,11 +9,10 @@
 
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/lexical_cast.hpp>
-using boost::asio::ip::tcp;
 
 #include "common_session.h"
 
-common_client::common_client(const string& hostname, unsigned short port, io_service& ios)
+common_client::common_client(const std::string& hostname, unsigned short port, boost::asio::io_service& ios)
 	: m_comm_mode(ECM_ASYNC)
 	, m_started(false)
 	, m_ios(ios)
@@ -67,7 +66,7 @@ void common_client::set_started(bool newVal){
 }
 
 
-bool common_client::start(int& err_code, string& err_msg){
+bool common_client::start(int& err_code, std::string& err_msg){
 
 	set_started();
 
@@ -76,20 +75,20 @@ bool common_client::start(int& err_code, string& err_msg){
 	//创建会话
 	common_session_ptr new_session = common_session_ptr(new common_session(m_ios));
 
-	tcp::resolver resolver(m_ios);
+	boost::asio::ip::tcp::resolver resolver(m_ios);
 	boost::system::error_code ec;
-	tcp::resolver::query query(m_server_host, boost::lexical_cast<string, unsigned short>(m_server_port));
+	boost::asio::ip::tcp::resolver::query query(m_server_host, boost::lexical_cast<std::string, unsigned short>(m_server_port));
 
-	tcp::resolver::iterator iter = resolver.resolve(query, ec);
-	tcp::resolver::iterator end;
+	boost::asio::ip::tcp::resolver::iterator iter = resolver.resolve(query, ec);
+	boost::asio::ip::tcp::resolver::iterator end;
 
 	if (boost::system::errc::success == ec)
 	{
 		if (iter != end)
 		{
-			tcp::endpoint ep = *iter;
+			boost::asio::ip::tcp::endpoint ep = *iter;
 
-			tcp::socket& _socket = new_session->get_socket();
+			boost::asio::ip::tcp::socket& _socket = new_session->get_socket();
 
 			//连接服务端
 			_socket.connect(ep, ec);
@@ -120,7 +119,7 @@ bool common_client::start(int& err_code, string& err_msg){
 		}
 		else
 		{
-			ostringstream oss;
+			std::ostringstream oss;
 			oss << "Resolve endpoint for host:" << m_server_host << ", port:" << m_server_port << " failed!";
 			err_msg = oss.str();
 			ret = false;

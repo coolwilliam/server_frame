@@ -18,7 +18,7 @@ bool session_connection_manager::add_session_connection(session_connection_ptr s
 	{
 		boost::mutex::scoped_lock lock(m_mtx_sc);
 
-		m_map_sc.insert(make_pair(sc->get_session_id(), sc));
+		m_map_sc.insert(std::make_pair(sc->get_session_id(), sc));
 	}
 
 	return true;

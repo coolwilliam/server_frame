@@ -10,7 +10,6 @@
 
 #include <utility>
 #include <list>
-using namespace std;
 
 #include "business_ptr_define.h"
 #include "network_ptr_define.h"
@@ -24,7 +23,7 @@ using namespace std;
 class SERVER_FRAME_BUSINESS_API session_connection
 {
 public:
-	typedef pair<common_session_ptr, common_session_ptr> session_pair_t;
+	typedef std::pair<common_session_ptr, common_session_ptr> session_pair_t;
 
 	typedef unsigned int session_id_t;
 
@@ -78,12 +77,12 @@ public:
 	session_connection::session_id_t get_session_id() const;
 
 	/************************************
-	* 函数名:   	get_sesson_pair
+	* 函数名:   	get_session_pair
 	* 功  能:	获取会话配对值
 	* 参  数: 	
 	* 返回值:   	session_connection::session_pair_t
 	************************************/
-	session_connection::session_pair_t get_sesson_pair() const;
+	session_connection::session_pair_t get_session_pair() const;
 
 	/************************************
 	* 函数名:   	send_cache
@@ -138,8 +137,8 @@ public:
 	************************************/
 	void set_close_on_destroy(bool val = true);
 private:
-	typedef pair<data_buffer_ptr, common_session_ptr> pair_cache_t;
-	typedef list<pair_cache_t> list_pair_cache_t;
+	typedef std::pair<data_buffer_ptr, common_session_ptr> pair_cache_t;
+	typedef std::list<pair_cache_t> list_pair_cache_t;
 
 	// 缓存队列
 	list_pair_cache_t m_list_cache;

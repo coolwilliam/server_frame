@@ -65,9 +65,16 @@ bool thread_pool::start_threads(){
 }
 
 
-void thread_pool::stop_threads(){
+void thread_pool::stop_threads(bool clear/* = false*/){
 	for (vect_thread_t::iterator itr = m_vect_thread.begin(); itr != m_vect_thread.end(); ++itr)
 	{
 		(*itr)->stop();
 	}
+
+	// 是否释放相关对象
+	if (clear)
+	{
+		m_vect_thread.clear();
+	}
+	
 }

@@ -9,10 +9,8 @@
 #define EA_BD838CAB_7940_4214_B276_0D7FF8432A18__INCLUDED_
 
 #include <string>
-using namespace std;
 
 #include <boost/asio/io_service.hpp>
-using namespace boost::asio;
 
 #include "network_ptr_define.h"
 #include "common_macro.h"
@@ -26,7 +24,7 @@ class SERVER_FRAME_NETWORK_API common_client
 {
 
 public:
-	common_client(const string& hostname, unsigned short port, io_service& ios);
+	common_client(const std::string& hostname, unsigned short port, boost::asio::io_service& ios);
 	virtual ~common_client();
 
 	/**
@@ -49,7 +47,7 @@ public:
 	/**
 	 * 启动客户端通讯
 	 */
-	bool start(int& err_code, string& err_msg);
+	bool start(int& err_code, std::string& err_msg);
 
 	/**
 	* 客户端会话
@@ -96,17 +94,18 @@ private:
 	/**
 	* boost IO服务
 	*/
-	io_service&				m_ios;
+	boost::asio::io_service&				m_ios;
 
 	/**
 	 * 服务主机
 	 */
-	string					m_server_host;
+	std::string					m_server_host;
 
 	/**
 	 * 服务端口
 	 */
 	unsigned short			m_server_port;
-
+private:
+	DISABLE_COPY(common_client)
 };
 #endif // !defined(EA_BD838CAB_7940_4214_B276_0D7FF8432A18__INCLUDED_)

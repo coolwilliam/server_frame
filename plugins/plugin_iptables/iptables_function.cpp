@@ -3,7 +3,6 @@
 #include <sstream>
 #include <stdio.h>
 #include <algorithm>
-using namespace std;
 
 #include "plugin_log_adapter.h"
 
@@ -142,7 +141,7 @@ bool iptables_function::generate_cmd(const rule_opt_t& opt, std::string& cmd)
 			}
 			else
 			{
-				os_cmd << min(opt.rule.sport[0], opt.rule.sport[1]) << ":" << max(opt.rule.sport[0], opt.rule.sport[1]);
+				os_cmd << std::min(opt.rule.sport[0], opt.rule.sport[1]) << ":" << std::max(opt.rule.sport[0], opt.rule.sport[1]);
 			}
 
 			os_cmd << g_space;
@@ -157,7 +156,7 @@ bool iptables_function::generate_cmd(const rule_opt_t& opt, std::string& cmd)
 			}
 			else
 			{
-				os_cmd << min(opt.rule.dport[0], opt.rule.dport[1]) << ":" << max(opt.rule.dport[0], opt.rule.dport[1]);
+				os_cmd << std::min(opt.rule.dport[0], opt.rule.dport[1]) << ":" << std::max(opt.rule.dport[0], opt.rule.dport[1]);
 			}
 
 			os_cmd << g_space;

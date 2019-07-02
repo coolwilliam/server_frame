@@ -13,7 +13,7 @@
 #include "data_handler.h"
 
 
-common_session::common_session(io_service & ios)
+common_session::common_session(boost::asio::io_service & ios)
 	:m_socket(ios)
 	, m_receive_cache_size(receive_cache_size_default)
 	, m_comm_mode(ECM_ASYNC)
@@ -27,39 +27,20 @@ common_session::~common_session(){
 }
 
 void common_session::close(){
-	if (m_socket.is_open())
-	{
-		data_handler_ptr p_data_handler = get_data_handler();
+	boost::mutex::scoped_lock lck(m_mtx_socket);
 
-		system::error_code ec;
-		m_socket.shutdown(boost::asio::socket_base::shutdown_both, ec);
-		m_socket.close(ec);
-		if (ec)
-		{
-			//在关闭时出错，接收错误消息
-			if (NULL != p_data_handler)
-			{
-				p_data_handler->on_session_error(shared_from_this(), ec.value(), ec.message());
-			}
-		}
-
-		if (NULL != p_data_handler)
-		{
-			//通知监听者 此会话已关闭
-			p_data_handler->on_session_close(shared_from_this(), get_remote_ip());
-		}
-	}
+	__close();
 }
 
 
 void common_session::data_write(){
-	//判断链表是否为空
-	if (true == m_list_send.empty())
+
+	data_buffer_ptr data_ptr = front();
+	if (NULL == data_ptr)
 	{
+		// 如果链表为空，则直接返回
 		return;
 	}
-
-	data_buffer_ptr data_ptr = m_list_send.front();
 
 	m_socket.async_write_some(
 		boost::asio::buffer(reinterpret_cast<void*>(data_ptr->get_data() + data_ptr->get_readpos()), data_ptr->get_data_length() - data_ptr->get_readpos()),
@@ -70,19 +51,21 @@ void common_session::data_write(){
 }
 
 
-string common_session::get_remote_ip()
+std::string common_session::get_remote_ip()
 {
 	return m_str_remote_ip;
 }
 
 
-tcp::socket& common_session::get_socket()
+boost::asio::ip::tcp::socket& common_session::get_socket()
 {
 	return m_socket;
 }
 
 
-void common_session::handle_read(system::error_code error, size_t size, boost::shared_ptr<string> p_cache){
+void common_session::handle_read(boost::system::error_code error, std::size_t size, boost::shared_ptr<std::string> p_cache){
+	boost::mutex::scoped_lock lck(m_mtx_socket);
+
 	if (boost::system::errc::success == error)
 	{
 		//如果接受大小为 0，则有错误，跳过并继续接收
@@ -97,13 +80,13 @@ void common_session::handle_read(system::error_code error, size_t size, boost::s
 		data_handler_ptr p_handler = get_data_handler();
 		if (NULL != p_handler)
 		{
-			string str_data;
+			std::string str_data;
 			str_data.resize(size);
 			memcpy((void*)(str_data.data()), p_cache->data(), size);
 
 			if (false == p_handler->on_received_data(shared_from_this(), str_data))
 			{
-				close();
+				__close();
 
 				return;
 			}
@@ -123,7 +106,7 @@ void common_session::handle_read(system::error_code error, size_t size, boost::s
 			p_handler->on_session_error(shared_from_this(), error.value(), error.message());
 		}
 
-		close();
+		__close();
 
 		return;
 	}
@@ -132,18 +115,27 @@ void common_session::handle_read(system::error_code error, size_t size, boost::s
 }
 
 
-void common_session::handle_write(const system::error_code& error, size_t size){
+void common_session::handle_write(const boost::system::error_code& error, std::size_t size){
+	boost::mutex::scoped_lock lck(m_mtx_socket);
+
 	if (boost::system::errc::success == error)
 	{
-		data_buffer_ptr data_ptr = m_list_send.front();
+		data_buffer_ptr data_ptr = front();
 
-		size_t left_size = data_ptr->get_data_length() - data_ptr->get_readpos();
+		std::size_t left_size = data_ptr->get_data_length() - data_ptr->get_readpos();
 
 		if (left_size == size
-			&& 0 != size)
+			|| 0 == size)
 		{
 			//如果发送的大小等于数据缓存大小，则从队列中删除
-			m_list_send.pop_front();
+			//如果发送字节数为0，为了防止数据堆积，故从队列中移除
+			std::size_t now_size = 0;
+			pop_front(now_size);
+			if (0 == now_size)
+			{
+				//如果当前列表为空，则退出该处理函数
+				return;
+			}
 		}
 		else if (left_size > size)
 		{
@@ -157,7 +149,8 @@ void common_session::handle_write(const system::error_code& error, size_t size){
 	}
 	else
 	{
-		m_list_send.pop_front();
+		std::size_t now_size = 0;
+		pop_front(now_size);
 
 //		printf("%s:%s--->session:%p, error:%s\n", __FILE__, __FUNCTION__, this, error.message().c_str());
 
@@ -167,25 +160,25 @@ void common_session::handle_write(const system::error_code& error, size_t size){
 			p_handler->on_session_error(shared_from_this(), error.value(), error.message());
 		}
 
-		close();
+		__close();
 	}
 
 	return;
 }
 
 
-int common_session::send_msg(const string & str_data){
+int common_session::send_msg(const std::string & str_data){
 	assert(get_comm_mode() == ECM_ASYNC && "Can't call this function in sync mode");
 
 	data_buffer_ptr buff = data_buffer_ptr(new data_buffer);
 	buff->write_byte_array(str_data.data(), str_data.size());
 
-	bool b_write = m_list_send.empty();
 
 	//将数据推到待发送链表中
-	m_list_send.push_back(buff);
+	std::size_t now_size = 0;
+	push_back(buff, now_size);
 
-	if (b_write)
+	if (1 == now_size)
 	{
 		data_write();
 	}
@@ -196,12 +189,12 @@ int common_session::send_msg(const string & str_data){
 
 void common_session::set_data_handler(data_handler_ptr new_val){
 	assert(NULL == get_data_handler()
-		&& "can't set data_hanler more than once!");
+		&& "can't set data_handler more than once!");
 	m_p_dataHandler = new_val;
 }
 
 
-void common_session::set_remote_ip(const string& new_val){
+void common_session::set_remote_ip(const std::string& new_val){
 	m_str_remote_ip = new_val;
 }
 
@@ -226,7 +219,7 @@ void common_session::start(){
 
 
 bool common_session::start_receive(){
-	boost::shared_ptr<string> p_data_recv(new string);
+	boost::shared_ptr<std::string> p_data_recv(new std::string);
 
 	p_data_recv->resize(get_recv_cache_size());
 
@@ -241,7 +234,7 @@ bool common_session::start_receive(){
 	return false;
 }
 
-void common_session::set_recv_cache_size(size_t val)
+void common_session::set_recv_cache_size(std::size_t val)
 {
 	assert(0 != val && "can't set cache size to 0!");
 
@@ -272,16 +265,16 @@ void common_session::set_started(bool newVal){
 	m_started = newVal;
 }
 
-size_t common_session::receive(string& str_data_recv, int& err_code, string& err_msg){
+size_t common_session::receive(std::string& str_data_recv, int& err_code, std::string& err_msg){
 	assert(get_comm_mode() == ECM_SYNC && "Can't call this function in async mode");
 
 	str_data_recv.clear();
 	string received_buff;
-	system::error_code error;
+	boost::system::error_code error;
 
 	received_buff.resize(get_recv_cache_size());
 
-	size_t recv_size = m_socket.read_some(boost::asio::buffer((char*)(received_buff.data()), received_buff.size()), error);
+	std::size_t recv_size = m_socket.read_some(boost::asio::buffer((char*)(received_buff.data()), received_buff.size()), error);
 	if (boost::system::errc::success != error)
 	{
 		err_code = error.value();
@@ -297,21 +290,21 @@ size_t common_session::receive(string& str_data_recv, int& err_code, string& err
 	return recv_size;
 }
 
-size_t common_session::send(const string& str_data_send, int& err_code, string& err_msg)
+std::size_t common_session::send(const std::string& str_data_send, int& err_code, std::string& err_msg)
 {
 	assert(get_comm_mode() == ECM_SYNC && "Can't call this function in async mode");
 	
-	system::error_code error;
-	size_t actual_send_size = str_data_send.size();
+	boost::system::error_code error;
+	std::size_t actual_send_size = str_data_send.size();
 
 	data_buffer buff;
 	buff.write_byte_array(str_data_send.data(), str_data_send.size());
 
-	size_t left_size = buff.get_data_length() - buff.get_readpos();
+	std::size_t left_size = buff.get_data_length() - buff.get_readpos();
 
 	while (left_size)
 	{
-		size_t send_size = m_socket.write_some(boost::asio::buffer(reinterpret_cast<void*>(buff.get_data() + buff.get_readpos()), buff.get_data_length() - buff.get_readpos()), error);
+		std::size_t send_size = m_socket.write_some(boost::asio::buffer(reinterpret_cast<void*>(buff.get_data() + buff.get_readpos()), buff.get_data_length() - buff.get_readpos()), error);
 		if (boost::system::errc::success != error)
 		{
 			err_code = error.value();
@@ -337,5 +330,60 @@ size_t common_session::send(const string& str_data_send, int& err_code, string& 
 	}
 
 	return actual_send_size;
+}
+
+void common_session::__close()
+{
+	if (m_socket.is_open())
+	{
+		data_handler_ptr p_data_handler = get_data_handler();
+
+		boost::system::error_code ec;
+		m_socket.shutdown(boost::asio::socket_base::shutdown_both, ec);
+		m_socket.close(ec);
+		if (ec)
+		{
+			//在关闭时出错，接收错误消息
+			if (NULL != p_data_handler)
+			{
+				p_data_handler->on_session_error(shared_from_this(), ec.value(), ec.message());
+			}
+		}
+
+		if (NULL != p_data_handler)
+		{
+			//通知监听者 此会话已关闭
+			p_data_handler->on_session_close(shared_from_this(), get_remote_ip());
+		}
+	}
+}
+
+data_buffer_ptr common_session::front()
+{
+	boost::mutex::scoped_lock lck(m_mtx_list);
+	if (m_list_send.empty())
+	{
+		return data_buffer_ptr();
+	}
+	else
+	{
+		return m_list_send.front();
+	}
+}
+
+void common_session::push_back(data_buffer_ptr buff, std::size_t& list_size_out)
+{
+	boost::mutex::scoped_lock lck(m_mtx_list);
+	m_list_send.push_back(buff);
+	list_size_out = m_list_send.size();
+	return;
+}
+
+void common_session::pop_front(std::size_t& list_size_out)
+{
+	boost::mutex::scoped_lock lck(m_mtx_list);
+	m_list_send.pop_front();
+	list_size_out = m_list_send.size();
+	return;
 }
 

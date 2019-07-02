@@ -9,7 +9,6 @@
 #define EA_6098D382_BD3F_4843_B9A6_E1B088F6EE4E__INCLUDED_
 
 #include <queue>
-using namespace std;
 
 #include <boost/thread.hpp>
 #include <boost/thread/condition_variable.hpp>
@@ -51,7 +50,7 @@ public:
 	void stop();
 
 private:
-	typedef queue<task_obj_ptr> queue_task_t;
+	typedef std::queue<task_obj_ptr> queue_task_t;
 	/**
 	 * 线程退出标识
 	 */

@@ -3,10 +3,9 @@
 
 //#include "boost/thread.hpp"
 #include <iosfwd>
+#include <string>
 #include "plugin_module_ptr_define.h"
 #include "common_singleton.hpp"
-
-using namespace std;
 
 class plugin_log_adapter;
 typedef plugin_log_adapter* plugin_log_adapter_ptr;
@@ -40,7 +39,7 @@ private:
 		{\
 			break;\
 		}\
-		ostringstream var;\
+		std::ostringstream var;\
 		var << "[" << __FILE__ << ":" << __LINE__ << ":" << __FUNCTION__ << "] - " <<logs;\
 		plugin_log_adapter::instance().log_trace(var.str());\
 	}while (0)
@@ -54,7 +53,7 @@ private:
 		{\
 			break;\
 		}\
-		ostringstream var;\
+		std::ostringstream var;\
 		var << "[" << __FILE__ << ":" << __LINE__ << ":" << __FUNCTION__ << "] - " <<logs;\
 		plugin_log_adapter::instance().log_error(var.str());\
 	}while (0)
@@ -68,7 +67,7 @@ private:
 		{\
 			break;\
 		}\
-		ostringstream var;\
+		std::ostringstream var;\
 		var << "[" << __FILE__ << ":" << __LINE__ << ":" << __FUNCTION__ << "] - " <<logs;\
 		plugin_log_adapter::instance().log_info(var.str());\
 	}while (0)
@@ -82,7 +81,7 @@ private:
 		{\
 			break;\
 		}\
-		ostringstream var;\
+		std::ostringstream var;\
 		var << "[" << __FILE__ << ":" << __LINE__ << ":" << __FUNCTION__ << "] - " <<logs;\
 		plugin_log_adapter::instance().log_critical(var.str());\
 	}while (0)

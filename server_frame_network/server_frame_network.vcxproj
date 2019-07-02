@@ -87,7 +87,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SERVER_FRAME_NETWORK_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SERVER_FRAME_NETWORK_EXPORTS;BOOST_ASIO_HAS_LOCAL_SOCKETS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
@@ -158,6 +158,12 @@
     <ClCompile Include="source\common_server.cpp" />
     <ClCompile Include="source\common_session.cpp" />
     <ClCompile Include="source\io_service_pool.cpp" />
+    <ClCompile Include="source\local_stream_client.cpp" />
+    <ClCompile Include="source\local_stream_server.cpp" />
+    <ClCompile Include="source\local_stream_session.cpp" />
+    <ClCompile Include="source\udp_client.cpp" />
+    <ClCompile Include="source\udp_server.cpp" />
+    <ClCompile Include="source\udp_session.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\common_client.h" />
@@ -165,10 +171,18 @@
     <ClInclude Include="include\common_session.h" />
     <ClInclude Include="include\data_handler.h" />
     <ClInclude Include="include\io_service_pool.h" />
+    <ClInclude Include="include\local_stream_client.h" />
+    <ClInclude Include="include\local_stream_data_handler.h" />
+    <ClInclude Include="include\local_stream_server.h" />
+    <ClInclude Include="include\local_stream_session.h" />
     <ClInclude Include="include\network_define.h" />
     <ClInclude Include="include\network_exports.h" />
     <ClInclude Include="include\network_ptr_define.h" />
     <ClInclude Include="include\server_frame_network.h" />
+    <ClInclude Include="include\udp_client.h" />
+    <ClInclude Include="include\udp_data_handler.h" />
+    <ClInclude Include="include\udp_server.h" />
+    <ClInclude Include="include\udp_session.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />

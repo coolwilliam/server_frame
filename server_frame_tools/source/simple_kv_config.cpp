@@ -276,3 +276,47 @@ bool simple_kv_config::is_valid_type(const string& type_name)
 		return false;
 	}
 }
+
+bool simple_kv_config::set_child(const std::string& key, simple_kv_config_ptr child)
+{
+	std::pair< map_children_t::iterator, bool > ret;
+	map_children_t::iterator inter;
+	inter = m_map_children.find(key);
+	if (inter == m_map_children.end())
+	{
+		ret = m_map_children.insert(map_children_t::value_type(key, child));
+		if (ret.second)
+			return true;
+		else
+			return false;
+	}
+	else
+	{
+		inter->second = child;
+		return true;
+	}
+}
+
+bool simple_kv_config::get_child(const std::string& key, simple_kv_config_ptr& child_out)
+{
+	bool ret = true;
+	map_children_t::iterator iter;
+
+	iter = m_map_children.find(key);
+	if (iter != m_map_children.end())
+	{
+		child_out = iter->second;
+		ret = true;
+	}
+	else
+	{
+		ret = false;
+	}
+
+	return ret;
+}
+
+bool simple_kv_config::has_children()
+{
+	return !m_map_children.empty();
+}

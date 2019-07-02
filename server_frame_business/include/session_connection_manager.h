@@ -9,7 +9,6 @@
 #define EA_3CB22261_BFBB_4bf7_989B_9F6194F8F7BA__INCLUDED_
 
 #include <map>
-using namespace std;
 
 #include "session_connection.h"
 #include "business_ptr_define.h"
@@ -64,7 +63,7 @@ private:
 	session_connection_manager(){}
 	~session_connection_manager(){}
 private:
-	typedef map<session_connection::session_id_t, session_connection_ptr> map_session_connection_t;
+	typedef std::map<session_connection::session_id_t, session_connection_ptr> map_session_connection_t;
 
 	//会话联接字典
 	session_connection_manager::map_session_connection_t m_map_sc;

@@ -1,8 +1,7 @@
 #ifndef simple_kv_config_h__
 #define simple_kv_config_h__
 
-// #include <boost/shared_ptr.hpp>
-// #include <boost/thread/mutex.hpp>
+/*system headers*/
 #include <assert.h>
 #include <string.h>
 #include <map>
@@ -11,8 +10,13 @@
 #include <sstream>
 using namespace std;
 
+/*local headers*/
 #include "common_macro.h"
 #include "tool_exports.h"
+#include "tool_ptr_define.h"
+
+/*boost headers*/
+#include "boost/unordered_map.hpp"
 
 class SERVER_FRAME_TOOL_API simple_kv_config
 {
@@ -79,6 +83,34 @@ public:
 	************************************/
 	map_kv_t get_all() const;
 
+	/************************************
+	* 函数名:   set_child
+	* 功  能:	设置子对象
+	* 参  数: 	
+	*			key
+	*			child
+	* 返回值:   bool
+	************************************/
+	bool set_child(const std::string& key, simple_kv_config_ptr child);
+
+	/************************************
+	* 函数名:   get_child
+	* 功  能:	获取子对象
+	* 参  数: 	
+	*			key
+	*			child_out
+	* 返回值:   bool
+	************************************/
+	bool get_child(const std::string& key, simple_kv_config_ptr& child_out);
+
+	/************************************
+	* 函数名:   has_children
+	* 功  能:	是否含有子对象
+	* 参  数: 	
+	* 返回值:   bool
+	************************************/
+	bool has_children();
+
 private:
 	/************************************
 	* 函数名:   	save_file
@@ -125,6 +157,7 @@ private:
 	bool is_valid_type(const string& type_name);
 
 private:
+	typedef boost::unordered_map<std::string, simple_kv_config_ptr> map_children_t;
 
 	//配置字典
 	map_kv_t m_map_kv;
@@ -137,6 +170,9 @@ private:
 
 	//有效的类型名称字典
 	map_valid_type_t m_map_valid_type;
+
+	// 子对象字典
+	map_children_t m_map_children;
 
 private:
 	DISABLE_COPY(simple_kv_config)

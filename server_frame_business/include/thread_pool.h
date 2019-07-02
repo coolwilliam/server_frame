@@ -9,7 +9,7 @@
 #define EA_474432E6_2AAE_4923_8623_F2B537A53168__INCLUDED_
 
 #include <vector>
-using namespace std;
+
 #include "business_exports.h"
 #include "common_macro.h"
 #include "business_ptr_define.h"
@@ -21,7 +21,7 @@ using namespace std;
 class SERVER_FRAME_BUSINESS_API thread_pool : public common_singleton<thread_pool>
 {
 public:
-	typedef vector<thread_obj_ptr> vect_thread_t;
+	typedef std::vector<thread_obj_ptr> vect_thread_t;
 
 	/**
 	 * 添加任务到线程池中
@@ -42,7 +42,7 @@ public:
 	/**
 	 * 停止所有线程
 	 */
-	void stop_threads();
+	void stop_threads(bool clear = false);
 
 private:
 	friend class common_singleton<thread_pool>;
