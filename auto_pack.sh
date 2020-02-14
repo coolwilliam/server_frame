@@ -39,13 +39,21 @@ fi
 
 main_incre=20
 sub_incre=1000
-svn_version=`svnversion -c |sed 's/^.*://' |sed 's/[A-Z]*$//'`
-
-fix_version=$(($svn_version%$sub_incre))
-sub_version=$((($(($svn_version/$sub_incre))+1)%$main_incre))
-main_version=$((($(($svn_version/$sub_incre))+1)/$main_incre))
-
-version=$main_version.$sub_version.$fix_version
+vcs_version=0
+version=''
+if [[ -d .git ]]; then
+    vcs_version=`git rev-list HEAD | wc -l | awk '{print $1}'`
+    version=r${vcs_version}-$(git rev-list HEAD -n 1 | cut -c 1-7)
+elif [[ -d .svn ]]; then
+    vcs_version=`svnversion -c |sed 's/^.*://' |sed 's/[A-Z]*$//'`
+    fix_version=$(($vcs_version%$sub_incre))
+    sub_version=$(($(($(($vcs_version/$sub_incre))+1))%${main_incre}))
+    main_version=$(($(($(($vcs_version/$sub_incre))+1))/${main_incre}))
+    version=${main_version}.${sub_version}.${fix_version}
+else
+    echo "No version control information, exit."
+    exit 1
+fi
 
 #定义软件名
 soft_name=server_frame
