@@ -387,3 +387,8 @@ void common_session::pop_front(std::size_t& list_size_out)
 	return;
 }
 
+void common_session::post_close()
+{
+	m_socket.get_io_service().post(m_strand.wrap(bind(&common_session::close, shared_from_this())));
+}
+

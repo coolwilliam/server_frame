@@ -92,6 +92,11 @@ public:
 	* 同步发送
 	*/
 	size_t send(const std::string& str_data_send, int& err_code, std::string& err_msg);
+
+	/*
+	*	异步关闭
+	*/
+	void post_close();
 private:
 
 	friend class common_server;
