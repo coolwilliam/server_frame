@@ -19,8 +19,8 @@ namespace boost
 {
 	namespace asio
 	{
-#ifndef io_service		
-		class io_context io_service;
+#ifndef io_service
+		typedef io_context io_service;
 #endif
 	}
 }
