@@ -10,7 +10,7 @@ sub_version=1
 fix_version=0
 #---end---
 
-version=$main_version.$sub_version.$fix_version
+version:=""
 
 #定义软件名
 soft_name=server_frame

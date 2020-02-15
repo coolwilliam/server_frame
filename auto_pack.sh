@@ -130,6 +130,7 @@ function add_sum()
 	echo "sum_value=$sum_value, sum_size=$sum_size"
 	cat install.sh | sed -e s/sum_value/$sum_value/ \
 	-e s/sum_size/$sum_size/ \
+	-e "s#^version:=.*#version=$version#g" \
 	-e "s#^bug_stat=.*#bug_stat=$bug_stat#g" \
 	-e "s#^main_version=.*#main_version=$main_version#g" \
 	-e "s#^sub_version=.*#sub_version=$sub_version#g" \
