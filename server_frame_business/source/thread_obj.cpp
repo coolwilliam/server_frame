@@ -106,6 +106,6 @@ unsigned int thread_obj::max_task_count() const
 
 void thread_obj::max_task_count(unsigned int val)
 {
-	assert(val < 1 && "Max count can't be less than 1.");
+	assert(val >= 1 && "Max count can't be less than 1.");
 	m_max_task_count = val;
 }
