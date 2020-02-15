@@ -63,7 +63,7 @@ bool thread_obj::push_task(task_obj_ptr task){
 
 		if (is_full())
 		{
-			printf("task full\n");
+			//printf("task full\n");
 			return false;
 		}
 		m_queue_task.push(task);
