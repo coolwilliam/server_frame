@@ -49,6 +49,12 @@ public:
 	*/
 	void stop();
 
+	/*
+	 *	最大任务缓存数
+	 */
+	unsigned int max_task_count() const;
+	void max_task_count(unsigned int val);
+
 private:
 	typedef std::queue<task_obj_ptr> queue_task_t;
 	/**
@@ -60,8 +66,6 @@ private:
 	 * 最大任务数
 	 */
 	unsigned int m_max_task_count;
-	unsigned int max_task_count() const;
-	void max_task_count(unsigned int val);
 
 	/**
 	 * 用于锁任务队列
