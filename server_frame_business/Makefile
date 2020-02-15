@@ -8,6 +8,7 @@ DIR_INC += -I$(CPATH)/../server_frame_tools/include
 DIR_INC += -I$(CPATH)/../server_frame_network/include
 DIR_INC += -I/usr/include
 DIR_INC += -I/usr/local/include
+DIR_INC += -I/usr/local/boost/include
 #DIR_INC += -I/usr/local/include/log4cplus
 #DIR_INC += -I/usr/local/include/luajit-2.1
 
@@ -19,10 +20,11 @@ DIR_OBJ =$(CPATH)/obj
 ### library path
 #LIB_S += -L./libs
 LIB_S += -L/usr/local/lib
+LIB_S += -L/usr/local/boost/lib
 LIB_S += -L$(CPATH)/../lib
 
 ### dynamic link libraries
-#LIB_S += -lpthread
+LIB_S += -lpthread
 LIB_S += -lboost_system
 LIB_S += -lboost_thread
 LIB_S += -lboost_timer

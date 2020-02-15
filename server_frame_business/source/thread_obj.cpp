@@ -98,3 +98,14 @@ void thread_obj::start_work(){
 void thread_obj::stop(){
 	m_thread->interrupt();
 }
+
+unsigned int thread_obj::max_task_count() const
+{
+	return m_max_task_count;
+}
+
+void thread_obj::max_task_count(unsigned int val)
+{
+	assert(val < 1 && "Max count can't be less than 1.")
+	m_max_task_count = val;
+}

@@ -58,6 +58,7 @@ bool thread_pool::start_threads(){
 	for (unsigned int index = 0; index < m_pool_size; index++)
 	{
 		thread_obj_ptr ptr = thread_obj_ptr(new thread_obj);
+		ptr->max_task_count(m_max_task_per_thread);
 		ptr->start();
 		m_vect_thread.push_back(ptr);
 	}
@@ -77,4 +78,20 @@ void thread_pool::stop_threads(bool clear/* = false*/){
 		m_vect_thread.clear();
 	}
 	
+}
+
+thread_pool::thread_pool()
+	:m_max_task_per_thread(default_max_task_cache_count)
+{
+
+}
+
+unsigned int thread_pool::max_task_per_thread() const
+{
+	return m_max_task_per_thread;
+}
+
+void thread_pool::max_task_per_thread(unsigned int val)
+{
+	m_max_task_per_thread = val;
 }

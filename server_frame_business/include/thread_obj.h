@@ -60,6 +60,9 @@ private:
 	 * 最大任务数
 	 */
 	unsigned int m_max_task_count;
+	unsigned int max_task_count() const;
+	void max_task_count(unsigned int val);
+
 	/**
 	 * 用于锁任务队列
 	 */

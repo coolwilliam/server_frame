@@ -44,9 +44,18 @@ public:
 	 */
 	void stop_threads(bool clear = false);
 
+	/*
+	 *	每个线程最大缓存任务数
+	 */
+	unsigned int max_task_per_thread() const;
+	void max_task_per_thread(unsigned int val);
+	enum {
+		default_max_task_cache_count = 0xFFFFFFFF
+	};
+
 private:
 	friend class common_singleton<thread_pool>;
-	thread_pool(){}
+	thread_pool();
 	~thread_pool(){}
 
 	/**
@@ -67,5 +76,10 @@ private:
 	 * 线程链表
 	 */
 	thread_pool::vect_thread_t m_vect_thread;
+
+	/*
+	 *	每个线程的同时最大缓存任务数
+	 */
+	unsigned int m_max_task_per_thread;
 };
 #endif  // !defined(EA_474432E6_2AAE_4923_8623_F2B537A53168__INCLUDED_)
