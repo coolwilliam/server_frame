@@ -16,4 +16,7 @@ typedef boost::shared_ptr<session_connection> session_connection_ptr;
 class session_connection_manager;
 typedef boost::shared_ptr<session_connection_manager> session_connection_manager_ptr;
 
+class thread_pool;
+typedef thread_pool* thread_pool_ptr;
+
 #endif  // business_ptr_define_h__

@@ -95,3 +95,8 @@ void thread_pool::max_task_per_thread(unsigned int val)
 {
 	m_max_task_per_thread = val;
 }
+
+thread_pool_ptr thread_pool::new_instance()
+{
+	return new thread_pool;
+}

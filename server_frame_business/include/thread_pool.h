@@ -53,6 +53,8 @@ public:
 		default_max_task_cache_count = 0xFFFFFFFF
 	};
 
+	static thread_pool_ptr new_instance();
+
 private:
 	friend class common_singleton<thread_pool>;
 	thread_pool();
