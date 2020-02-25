@@ -56,7 +56,7 @@ public:
 	/*
 	 *	ÐÂ½¨ÊµÀý
 	 */
-	thread_pool_ptr new_instance();
+	static thread_pool_ptr new_instance();
 
 private:
 	friend class common_singleton<thread_pool>;
