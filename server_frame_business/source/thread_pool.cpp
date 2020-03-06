@@ -100,3 +100,15 @@ thread_pool_ptr thread_pool::new_instance()
 {
 	return new thread_pool;
 }
+
+size_t thread_pool::task_count() const
+{
+	size_t task_count = 0;
+	vect_thread_t::const_iterator it = m_vect_thread.begin();
+	for (; it != m_vect_thread.end(); ++it)
+	{
+		task_count += it->get()->get_task_count();
+	}
+
+	return task_count;
+}

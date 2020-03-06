@@ -58,6 +58,14 @@ public:
 	 */
 	static thread_pool_ptr new_instance();
 
+	/************************************
+	* 函数名:   task_count
+	* 功  能:	获取任务缓存数
+	* 参  数: 	
+	* 返回值:   size_t
+	************************************/
+	size_t task_count() const;
+
 private:
 	friend class common_singleton<thread_pool>;
 	thread_pool();
